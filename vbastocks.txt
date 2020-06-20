@@ -1,0 +1,57 @@
+Sub stockfinal()
+
+Dim ws As Worksheet
+Dim lastrow As Long
+lastrow = Cells(Rows.count, 1).End(xlUp).Row
+Dim vol As Double
+vol = 0
+Dim sumrow As Long
+sumrow = 2
+Dim count As Double
+count = 0
+
+
+'set headers
+Range("I1").Value = "Ticker"
+Range("J1").Value = "Yearly change"
+Range("K1").Value = "Percent Change"
+Range("L1").Value = "total stock volume"
+
+'Loop
+    For i = 2 To lastrow
+        'adding volumes with the same ticker
+        If Cells(i + 1, 1).Value = Cells(i, 1).Value Then
+            vol = vol + Cells(i, 7).Value
+            count = count + 1
+        
+        'record the difference in year beginning and year end
+        Else
+            Cells(sumrow, 9).Value = Cells(i, 1).Value
+            Cells(sumrow, 10).Value = Cells(i, 6).Value - Cells(i - count, 3).Value
+            
+            'make positive cells green and negative cells red
+            If Cells(sumrow, 10).Value < 0 Then
+                Cells(sumrow, 10).Interior.ColorIndex = 3
+            Else
+                Cells(sumrow, 10).Interior.ColorIndex = 4
+            End If
+            
+            'calculate percentage change
+            If Cells(i - count, 3).Value = 0 Then
+            Cells(sumrow, 11).Value = "0"
+            Else
+            Cells(sumrow, 11).NumberFormat = "0.00%"
+            Cells(sumrow, 11).Value = (Cells(sumrow, 10).Value / Cells(i - count, 3).Value)
+            
+            End If
+            
+            'Calculate the volume total
+            Cells(sumrow, 12).Value = vol + Cells(i, 7).Value
+            
+            'reset counters
+            vol = 0
+            count = 0
+            sumrow = sumrow + 1
+        End If
+    Next i
+End Sub
